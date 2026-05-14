@@ -1,15 +1,5 @@
 import { useState, useRef, useContext, createContext, useEffect } from "react";
-import {
-  getClients, addClient, updateClient, deleteClient,
-  getProjects, addProject, updateProject,
-  getBriefs, addBrief, updateBrief,
-  getNextMonth, addNextMonth,
-  getComments, addComment,
-  getAssets, addAsset,
-  getBrandFiles, addBrandFile, deleteBrandFile,
-  getContent, updateContent,
-  uploadFile,
-} from "./supabase";
+import { supabase } from "./supabase";
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────────
 const C = {
@@ -1335,6 +1325,38 @@ export default function App() {
   const [viewingClient, setViewingClient] = useState(null);
   const [menuOpen, setMenuOpen]           = useState(false);
   const [loading, setLoading]             = useState(true);
+  const [email, setEmail]                 = useState("");
+  const [password, setPassword]           = useState("");
+
+  const signUp = async () => {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password
+  })
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  alert("User created successfully")
+  console.log("Supabase response:", data)
+}
+ 
+  const login = async () => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  })
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  alert("Logged in successfully")
+  console.log("Login response:", data)
+}
 
   // Fix 5: per-client data scoping — filter by client_id when viewing a specific client
   const portalClient = viewingClient || null;
@@ -1387,6 +1409,37 @@ export default function App() {
   );
 
   return (
+
+    return (
+  <div style={{ padding: 40 }}>
+    <h1>Pixie Portal Login</h1>
+
+    <input
+      placeholder="Email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      style={{ display: "block", marginBottom: 10 }}
+    />
+
+    <input
+      placeholder="Password"
+      type="password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      style={{ display: "block", marginBottom: 10 }}
+    />
+
+    <button onClick={signUp} style={{ marginRight: 10 }}>
+      Sign Up
+    </button>
+
+    <button onClick={login}>
+      Login
+    </button>
+  </div>
+)
+
+    
     <ContentCtx.Provider value={{ content:derivedContent, setContent, editMode }}>
     <div style={{ display:"flex",height:"100vh",overflow:"hidden",fontFamily:F,background:C.bg }}>
       <style>{`
